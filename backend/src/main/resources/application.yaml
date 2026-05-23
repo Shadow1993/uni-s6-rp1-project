@@ -11,7 +11,7 @@ spring:
     mapper:
       sort-properties-alphabetically: false
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
