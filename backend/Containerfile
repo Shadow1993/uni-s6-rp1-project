@@ -1,0 +1,14 @@
+# build
+FROM docker.io/library/maven:3.9.16-eclipse-temurin-25-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# run
+FROM docker.io/library/eclipse-temurin:25-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+# wget for healthcheck
+RUN apk add --no-cache wget
+ENTRYPOINT ["java", "-jar", "app.jar"]
