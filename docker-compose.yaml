@@ -1,0 +1,122 @@
+name: s6rp1project
+
+networks:
+  public:
+    driver: bridge
+  internal:
+    driver: bridge
+    internal: true
+
+services:
+  reverse-proxy:
+    image: docker.io/library/nginx:alpine
+    container_name: reverse-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - public
+      - internal
+    restart: always
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 128M
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    container_name: frontend
+    networks:
+      - internal
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Containerfile
+    container_name: backend
+    env_file:
+      - ./backend/.env
+    networks:
+      - internal
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: docker.io/library/postgres:16.14-alpine3.23
+    container_name: db
+    env_file:
+      - ./db/.env
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/initdb.d:/docker-entrypoint-initdb.d:ro
+    networks:
+      - internal
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-backup:
+    image: docker.io/library/postgres:16.14-alpine3.23
+    container_name: db-backup
+    env_file:
+      - ./db-backup/.env
+    volumes:
+      - ./db-backup/backup.sh:/usr/local/bin/backup.sh:ro
+      - db_backups:/backups
+    networks:
+      - internal
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 128M
+    entrypoint: ["sh", "-c", "while true; do sh /usr/local/bin/backup.sh; sleep $${BACKUP_INTERVAL_SECONDS}; done"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db: {}
+  db_backups: {}
