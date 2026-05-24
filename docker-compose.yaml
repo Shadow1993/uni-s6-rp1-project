@@ -28,6 +28,11 @@ services:
         limits:
           cpus: '0.75'
           memory: 128M
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
 
   frontend:
     build:
