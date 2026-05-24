@@ -1,0 +1,23 @@
+<form (submit)="onSubmit()" [formGroup]="entity">
+    <div>
+        <label for="quantity">Quantity:</label>
+        <input formControlName="quantity" type="number" name="quantity">
+    </div>
+    <div formGroupName="item">
+        <label for="item">Item:</label>
+        <input formControlName="id" type="number" name="item">
+    </div>
+    <div formGroupName="order">
+        <label for="order">Order:</label>
+        <input formControlName="id" type="number" name="order">
+    </div>
+
+    <div>
+        @if(id() !== null) {
+            <button type="submit">Izmeni</button>
+        }
+        @else {
+            <button type="submit">Dodaj</button>
+        }
+  </div>
+</form>

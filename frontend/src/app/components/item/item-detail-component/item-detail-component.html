@@ -1,0 +1,13 @@
+<div>
+    @if(entity() !== null) {
+        <p>ID: {{entity()!.id}}</p>
+        <p>Name: {{entity()!.name}}</p>
+        <p>Price: {{entity()!.price}}</p>
+        <p>Found in orders:</p>
+        <ul>
+            @for (ent of entity()!.orderItems; track ent.id) {
+                <li>{{ent.id}} | Quantity: {{ent.quantity}}</li>
+            }
+        </ul>
+    }
+</div>

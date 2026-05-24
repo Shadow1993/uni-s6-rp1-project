@@ -1,0 +1,23 @@
+<form (submit)="onSubmit()" [formGroup]="entity">
+    <div>
+        <label for="customerName">Customer Name:</label>
+        <input formControlName="customerName" type="text" name="customerName">
+    </div>
+    <div>
+        <label for="status">Status:</label>
+        <input formControlName="status" type="text" name="status">
+    </div>
+    <div>
+        <label for="createdAt">CreatedAt:</label>
+        <input formControlName="createdAt" type="datetime-local" name="createdAt">
+    </div>
+
+    <div>
+        @if(id() !== null) {
+            <button type="submit">Izmeni</button>
+        }
+        @else {
+            <button type="submit">Dodaj</button>
+        }
+  </div>
+</form>

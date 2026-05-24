@@ -1,0 +1,19 @@
+<div>
+    @if(entity() !== null) {
+        <p>ID: {{entity()!.id}}</p>
+        <p>Quantity: {{entity()!.quantity}}</p>
+        <p>Item:</p>
+        <ul>
+            <li>ID: {{entity()!.item.id}}</li>
+            <li>Name: {{entity()!.item.name}}</li>
+            <li>Price: {{entity()!.item.price}}</li>
+        </ul>
+        <p>Order:</p>
+        <ul>
+            <li>ID: {{entity()!.order.id}}</li>
+            <li>Status: {{entity()!.order.status}}</li>
+            <li>Customer Name: {{entity()!.order.customerName}}</li>
+            <li>Created At: {{entity()!.order.createdAt}}</li>
+        </ul>
+    }
+</div>

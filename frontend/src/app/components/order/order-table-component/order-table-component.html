@@ -1,0 +1,31 @@
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Customer Name</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>
+                Action
+                <button (click)="dodaj()">+</button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for(entity of entities(); track entity.id) {
+        <tr>
+            <td>{{entity.id}}</td>
+            <td>{{entity.customerName}}</td>
+            <td>{{entity.status}}</td>
+            <td>{{entity.createdAt}}</td>
+            <td>
+                @if(entity.id != null) {
+                <button (click)="detalji(entity.id)">D</button>
+                <button (click)="izmeni(entity.id)">E</button>
+                <button (click)="ukloni(entity.id)">X</button>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
